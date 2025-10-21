@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Continuous Rotator – CodePen Template</title>
+
+        <!-- Typography for demo/template (you can change in CodePen Settings > CSS) -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+        <style>
+            :root {
+                /* General design variables */
+                --banner-bg: #dbdbdb;
+                --text-color: #000000;
+                --text-accent: #3c22e3;
+                --height: 2rem;
+                --padding-x: 2rem;
+                --transition-ms: 1000ms; /* smooth transitions */
+                --rotation-ms: 10000ms; /* duration of each slide */
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                height: 100%;
+            }
+            body {
+                font-family: 'Work Sans', system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, sans-serif;
+                margin: 0;
+            }
+
+            .d-none {
+                display: none !important;
+            }
+
+            .strong-text {
+                font-weight: bolder;
+            }
+            .usp {
+                flex-basis: 100%;
+                grid-area: usp;
+            }
+
+            /* Banner container */
+            .par-banner--container {
+                background-color: var(--banner-bg);
+                color: var(--text-color);
+                transition: background-color var(--transition-ms) ease;
+                position: relative;
+            }
+
+            /* Layout and alignment */
+            .par-banner--static {
+                transform: translateY(0);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: var(--height);
+            }
+
+            .uspBannerHomepage {
+                font-size: 0.813rem;
+                line-height: 1;
+                letter-spacing: 0;
+                margin: 0 auto;
+                width: 100%;
+                overflow: hidden; /* hides overflowing text */
+                position: relative;
+                height: var(--height);
+            }
+
+            .uspBannerHomepage .uspElementHomepage {
+                color: var(--text-color);
+                display: none; /* only visible text is displayed */
+                text-align: center;
+                white-space: nowrap;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+            .uspBannerHomepage .uspElementHomepage.visible {
+                display: block;
+                padding: 0.5rem var(--padding-x);
+                animation: hideHomepage calc(var(--rotation-ms)) ease-in-out;
+            }
+
+            /* Simple fade in/out animation */
+            @keyframes hideHomepage {
+                0% {
+                    opacity: 0;
+                }
+                5% {
+                    opacity: 1;
+                }
+                95% {
+                    opacity: 1;
+                }
+                100% {
+                    opacity: 0;
+                }
+            }
+
+            .uspElementHomepage a,
+            .uspElementHomepage {
+                color: var(--text-color);
+                text-decoration: none;
+            }
+
+            /* Close button styles */
+            .par-banner--close {
+                position: absolute;
+                top: 50%;
+                right: 0;
+                transform: translateY(-50%);
+            }
+
+            .js_banner-close {
+                background: var(--banner-bg);
+                padding: 0 1rem;
+                border: 0;
+                cursor: pointer;
+                height: var(--height);
+                display: grid;
+                place-items: center;
+                transition: background-color var(--transition-ms) ease;
+            }
+            .js_banner-close svg {
+                filter: invert(0);
+                transition: all var(--transition-ms) ease;
+            }
+
+            /* Accessibility: reduced motion support */
+            @media (prefers-reduced-motion: reduce) {
+                .uspBannerHomepage .uspElementHomepage.visible {
+                    animation: none;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!--
+      GENERIC CodePen TEMPLATE (no dependencies or country logic)
+      - Change <html lang="…"> to test different languages (e.g., "pt", "es", "fr", etc.).
+      - Adjust the links (href) as needed.
+    -->
+
+        <div class="par-banner--container par-banner--static" id="parHeaderBannerStatic">
+            <div class="uspBannerHomepage" aria-live="polite" aria-atomic="true">
+                <a class="uspElementHomepage" id="msg-Homepage-02" style="color: var(--text-accent)"></a>
+                <a class="uspElementHomepage" id="msg-Homepage-01" style="color: var(--text-color)"></a>
+            </div>
+            <div class="par-banner--close">
+                <button aria-label="Close banner" class="js_banner-close" title="Close">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true" focusable="false">
+                        <path d="M2.25 2.25L12.75 12.75M2.25 12.75C2.55 12.45 9.375 5.625 12.75 2.25" stroke="#000000" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                /* === CONFIGURATION ===
+           You can edit these values in CodePen.
+        */
+                const ROTATION_MS = 10000; // rotation duration per slide (same as CSS var --rotation-ms)
+                const CLOSE_KEY = 'HeaderBannerStaticHidden'; // sessionStorage key to remember closed state
+
+                /* === DOM ELEMENTS === */
+                const banner = document.getElementById('parHeaderBannerStatic');
+                const closeBtn = document.querySelector('.js_banner-close');
+                const closeBtnSvg = document.querySelector('.js_banner-close svg');
+                const uspContainer = document.querySelector('.uspBannerHomepage');
+                const msg01 = document.getElementById('msg-Homepage-01');
+                const msg02 = document.getElementById('msg-Homepage-02');
+
+                /* === SETUP LINKS (customize freely) === */
+                msg01.href = '#';
+                msg02.href = '#';
+
+                /* === LOCALIZATION (based on document language) === */
+                const lang = (document.documentElement.lang || 'en').toLowerCase();
+                switch (lang) {
+                    case 'pt':
+                        msg01.innerHTML = '<span class="strong-text">10% desconto</span> | Subscreva newsletter';
+                        msg02.innerHTML = '<span class="strong-text">Samuel Silva</span> | Esta é uma mensagem muito longa para testar o comportamento de scroll automático no banner.';
+                        break;
+                    default:
+                        msg01.innerHTML = '<span class="strong-text">Get 10% off</span> | Join our newsletter';
+                        msg02.innerHTML = '<span class="strong-text">Samuel Silva</span> | This is a very long message to test the auto-scrolling behavior in the banner.';
+                        break;
+                }
+
+                /* === ACCESSIBILITY ===
+           Ensure assistive technologies are notified when content updates.
+        */
+                uspContainer.setAttribute('role', 'status');
+
+                /* === ROTATION SETUP === */
+                const uspElements = [msg02, msg01]; // message rotation order
+                let currentIndex = 0;
+                let intervalId;
+
+                // Updates background color (extendable if different banners require custom colors)
+                function updateBackgroundColor() {
+                    const visible = uspElements[currentIndex];
+                    banner.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--banner-bg');
+                    closeBtn.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--banner-bg');
+                    closeBtnSvg.style.filter = 'invert(0)';
+                }
+
+                // Displays the current message and animates text if needed
+                function showMessage() {
+                    // Hide all messages first
+                    uspElements.forEach((el) => {
+                        el.classList.remove('visible');
+                        el.style.transform = '';
+                        el.style.transition = '';
+                        el.style.width = '';
+                    });
+
+                    // Show the current element
+                    const el = uspElements[currentIndex];
+                    el.classList.add('visible');
+                    updateBackgroundColor();
+
+                    // If text is wider than container, auto-scroll horizontally
+                    const textWidth = el.scrollWidth;
+                    const closeBtnSpace = 16; // space reserved for close button
+                    const containerWidth = uspContainer.offsetWidth - closeBtnSpace;
+
+                    if (textWidth > containerWidth) {
+                        const difference = textWidth - containerWidth;
+                        // delay before scroll starts
+                        setTimeout(() => {
+                            const seconds = difference / 50; // scroll speed factor
+                            el.style.transition = `transform ${seconds}s linear`;
+                            el.style.transform = `translateX(-${difference}px)`;
+                        }, 2000);
+                    } else {
+                        el.style.width = `${containerWidth}px`;
+                        el.style.transform = 'translateX(0)';
+                    }
+
+                    // Move to next index in cycle
+                    currentIndex = (currentIndex + 1) % uspElements.length;
+                }
+
+                // Initialize the first rotation immediately
+                showMessage();
+                intervalId = setInterval(showMessage, ROTATION_MS);
+
+                /* === CLOSE BUTTON HANDLER === */
+                closeBtn.addEventListener('click', () => {
+                    banner.classList.add('d-none'); // hide the banner
+                    sessionStorage.setItem(CLOSE_KEY, '1'); // remember closed state
+                    if (intervalId) clearInterval(intervalId); // stop rotation
+                });
+
+                /* === RESTORE STATE IF CLOSED === */
+                if (sessionStorage.getItem(CLOSE_KEY) === '1') {
+                    banner.classList.add('d-none');
+                }
+
+                /* === OPTIONAL SCROLL BEHAVIOR ===
+           Example: Add a visual state when banner is visible at top of page.
+        */
+                const navHeader = document.querySelector('.navbar-header');
+                if (navHeader && !banner.classList.contains('d-none')) {
+                    document.addEventListener('scroll', function () {
+                        if (!window.scrollY) {
+                            navHeader.classList.add('par-banner--visible-static');
+                        } else {
+                            navHeader.classList.remove('par-banner--visible-static');
+                        }
+                    });
+                }
+
+                /* === WINDOW RESIZE HANDLING === */
+                window.addEventListener('resize', () => {
+                    // Reset transitions and transforms on resize for smoother adaptation
+                    uspElements.forEach((el) => {
+                        el.style.transition = 'none';
+                        el.style.transform = 'none';
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>
